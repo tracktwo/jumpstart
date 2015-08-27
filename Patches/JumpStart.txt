@@ -14,28 +14,17 @@ OBJECT = XGStrategy.StartingNewGame : AUTO
 					07 [@label_nomutators]
 					77 19 19 12 20 <Engine.Engine> [@] <Engine.Engine.GetCurrentWorldInfo.ReturnValue> 00 ( 1C <Engine.Engine.GetCurrentWorldInfo> 16 ) [@] <Engine.WorldInfo.Game> 00 ( 01 <Engine.WorldInfo.Game> ) [@] <Engine.GameInfo.BaseMutator> 00 ( 01 <Engine.GameInfo.BaseMutator> ) 2A 16
 					19 19 19 12 20 <Engine.Engine> [@] <Engine.Engine.GetCurrentWorldInfo.ReturnValue> 00 ( 1C <Engine.Engine.GetCurrentWorldInfo> 16 ) [@] <Engine.WorldInfo.Game> 00 ( 01 <Engine.WorldInfo.Game> ) [@] <Engine.GameInfo.BaseMutator> 00 ( 01 <Engine.GameInfo.BaseMutator> ) [@] <NullRef> 00 ( 1B <Mutate> 1F <%t "XGStrategy.StartNewGame"> 19 12 20 <Engine.Engine> [@] <Engine.Engine.GetCurrentWorldInfo.ReturnValue> 00 ( 1C <Engine.Engine.GetCurrentWorldInfo> 16 ) [@] <Engine.Actor.GetALocalPlayerController.ReturnValue> 00 ( 1C <Engine.Actor.GetALocalPlayerController> 16 ) 16 )
+
+                    // infinite loop waiting for jumpstart to initialize.
+                    [#label_topofloop]
+                        // Sleep(0.10)
+                        61 00 1E <%f 0.10> 16
+                        06 [@label_topofloop]
+                    [#label_waitforjumpstart]
 					//1B <GoToHQ> 16
 					//04 0B
 					//14 01 <@m_bControlledStart> 27
 					[#label_nomutators]
-/*
-					07 [@label_firstcheckdebug]
-					81 2D 01 <@m_bDebugStart> 16
-					// Load Map
-					12 20 <XComGame.XComMapManager> [@] <NullRef> 00 ( 1B <AddStreamingMap> 1F <%t "CustomStartMap"> 16 )
-					// while (!m_bDebugStart)
-					[#label_topofwhile]
-					07 [@label_waitfordebug]
-					81 2D 01 <@m_bDebugStart> 16
-						// Sleep(0.10);
-						61 00 1E <%f 0.10> 16
-						06 [@label_topofwhile]
-					[#label_waitfordebug]
-					14 01 <@m_bDebugStart> 28
-					// Close map
-					12 20 <XComGame.XComMapManager> [@] <NullRef> 00 ( 1B <RemoveStreamingMapByName> 1F <%t "CustomStartMap"> 16 )
-					[#label_firstcheckdebug]
-*/
 /*(0x0106/0x00C2)*/ 07 [@label_0x0181] 82 81 2D 01 <@m_bControlledStart> 16 18 [@] ( 81 2D 01 <@m_bDebugStart> 16 16 ) 
 /*(0x0126/0x00DA)*/ 	61 00 1E <%f 0.1> 16 
 /*(0x012E/0x00E2)*/ 	19 1B <GEOSCAPE> 16 [@] <NullRef> 00 ( 1B <PreloadSquadIntoSkyranger> 24 01 28 16 ) 

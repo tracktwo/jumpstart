@@ -239,16 +239,23 @@ function XGExaltSimulation EXALT()
     return Game().m_kExaltSimulation;
 }
 
-function ExecuteJumpStart()
-{
+// Set up the game state. This function is split into several pieces,
+// ExecuteJumpStart, ExecutePhase2, and ExecutePhase3.  This is to avoid
+// accidentally triggering the runaway loop detection for extremely big setups
+// or use with other mods that are also very complex. 
+//
+// Particularly, the Race and Gender Aware Namelist mod often triggered runaway
+// loops when JumpStart was one enormous function that all executed in the same
+// tick as it includes a *lot* of loops and conditionals.
+//
+// The fix is to split the function, setting timers at the end of each phase to
+// execute the next phase. The main thread of execution that calls into the
+// mutator will wait in an infinite sleep loop while this happens. When
+// jumpstart is finished, it actually jumps directly to the HQ state, breaking
+// out of the loop we left ourselves in.
+function ExecuteJumpStart() 
+{ 
     local int i;
-    local int j;
-    local int k;
-    local bool isMec;
-    local XGTacticalGameCoreData.ESoldierClass eClass;
-    local XGTacticalGameCoreNativeBase.EPerkType ePerk;
-    local XGShip_Interceptor kShip;
-    local XGStrategySoldier kSoldier;
 
     for (i = 0; i < research.Length; ++i)
     {
@@ -274,8 +281,22 @@ function ExecuteJumpStart()
     }
     Base().UpdateTiles();
 
+    SetTimer(0.01, false, 'ExecutePhase2');
+    return;
+}
+
+function ExecutePhase2()
+{
     // Set soldiers
-   
+ 
+    local int i;
+    local int j;
+    local int k;
+    local bool isMec;
+    local XGTacticalGameCoreData.ESoldierClass eClass;
+    local XGTacticalGameCoreNativeBase.EPerkType ePerk;
+    local XGStrategySoldier kSoldier;
+
     if (soldier.Length > 0 || blanksoldier.Length > 0)
     {
         BARRACKS().m_arrSoldiers.Length = 0;
@@ -447,11 +468,11 @@ function ExecuteJumpStart()
     }
 
     // Handle random soldiers.
-
     for (i = 0; i < blanksoldier.Length; ++i)
     {
         for (j = 0; j < blanksoldier[i].iCount; ++j)
         {
+            `Log("Blank soldier " $ i $ " " $ j);
             BARRACKS().AddNewSoldiers(1);
             kSoldier = BARRACKS().m_arrSoldiers[BARRACKS().m_arrSoldiers.Length-1];
             for (k = 0; k < blanksoldier[i].iRank; ++k)
@@ -460,12 +481,20 @@ function ExecuteJumpStart()
             }
         }
     }
-
+    `Log("There are " $ BARRACKS().m_arrSoldiers.Length $ " soldiers in the barracks");
     // Go back over all the soldiers and reset their pawns
     foreach BARRACKS().m_arrSoldiers(kSoldier)
     {
         kSoldier.SetHQLocation(0, true);
     }
+
+    SetTimer(0.01, false, 'ExecutePhase3');
+}
+
+function ExecutePhase3()
+{
+    local int i;
+    local XGShip_Interceptor kShip;
 
     // Add storage items
     for (i = 0; i < storage.Length; ++i)
