@@ -1,0 +1,33 @@
+===================================================
+==              JUMPSTART CHANGELOG              ==
+===================================================
+
+v0.3B - XXXX-XX-XX
+    * Add new FRAGMENTS resource to make it eaier to add weapon
+      fragments (the storage command still works too with 
+      eItem_WeaponFragment).
+    * Now compatible with Long War Mod Installer: no longer necessary
+      to manually edit the DefaultMutatorLoader.ini file, but you still
+      need to copy the JumpStart.u and DefaultJumpStart.ini files into the
+      correct folders!
+
+v0.2B - 2015-08-04
+	* Add country, gender, and appearance fields to custom soldiers
+	* Do not hardcode squaddie-level perks to assign to custom soldiers,
+	  look them up in the perk tree at runtime. This should help to 
+	  ensure the mod works better with customized .ini files that rearrange
+	  perk trees and also react to any future LW update that changes 
+	  the class-defining perks.
+	* Default count for items in storage is 1 if not specified
+	* Mec soldiers can now be created via "soldier". 
+        * Skip the initial mission, start in the HQ.
+        * Start date can be specified - be sure to set alien resources & research
+          to reasonable levels when starting later in the game or they'll be weak.
+        * Initial satellites now working better.
+        * Fix bug with starting alien bonus research
+        * Number of initial EXALT clues to start with can be specified.
+        * Initial start date of slingshot mission can now be specified - useful for
+          starts that do not begin on 2016-03-01 to avoid an instant slingshot mission.
+       
+v0.1B - 2015-07-30
+First public release!

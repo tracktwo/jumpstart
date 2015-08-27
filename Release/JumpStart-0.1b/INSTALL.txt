@@ -1,0 +1,36 @@
+===================================================
+==          JUMPSTART INSTALLATION               ==
+===================================================
+
+Until I have a fancy installer, you will need to install JumpStart the 
+manual way. Follow these steps:
+
+1. Make sure you have LW installed, this will not work with Vanilla. 
+   Tested with 15f, but any B15 should work and possibly some earlier versions.
+   
+2. Apply the patch StartingNewGame.txt with PatcherGUI
+
+3. Copy JumpStart.u into your XEW\XComGame\CookedPCConsole folder.  
+   e.g. C:\Program Files (x86)\Steam\SteamApps\Common\XCom-Enemy-Unknown\XEW\XComGame\CookedPCConsole
+   
+   **IMPORTANT: Don't forget the "XEW", otherwise you're installing it into 
+     the EU folder and this won't work!**
+
+4. Copy DefaultJumpStart.ini into the XEW\XComGame\Config folder. This should
+   be a sibling folder to the CookedPCConsole folder.
+   
+   **IMPORTANT: This is just a placeholder sample and must be edited to make a
+     useful campaign start. See step 4 below.**
+
+5. If you're using an unmodified B15, you can copy the provided
+   DefaultMutatorLoader.ini file into the XEW\XComGame\Config folder,
+   overwriting the one that was already there. If you have made modifications
+   to LW, you may already have a modified DefaultMutatorLoader.ini file. In this
+   case, add this line to the existing file in your favorite text editor:
+   
+        arrStrategicMutators="JumpStart.JumpStart"
+
+6. Edit the DefaultJumpStart.ini file you installed to the Config folder to set
+   the parameters you want for your campaign.
+   
+7. Start a new game!

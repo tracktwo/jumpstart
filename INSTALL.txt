@@ -1,0 +1,34 @@
+===================================================
+==          JUMPSTART INSTALLATION               ==
+===================================================
+
+JumpStart is compatible with the Long War Mod Manager for a slightly simpler install, or
+you can still use PatcherGUI if you prefer.
+
+LONG WAR MOD MANAGER INSTALLATION STEPS
+
+1. Copy JumpStart.txt into your Mods folder and select & install it with your
+   other mods.
+
+2. Copy JumpStart.u into your XEW\XComGame\CookedPCConsole folder.  
+   e.g. C:\Program Files (x86)\Steam\SteamApps\Common\XCom-Enemy-Unknown\XEW\XComGame\CookedPCConsole
+   
+   **IMPORTANT: Don't forget the "XEW", otherwise you're installing it into 
+     the EU folder and this won't work!**
+
+3. Copy DefaultJumpStart.ini into the XEW\XComGame\Config folder. This should
+   be a sibling folder to the CookedPCConsole folder.
+   
+   **IMPORTANT: This is just a placeholder sample and must be edited to make a
+     useful campaign start. See step 4 below.**
+
+PATCHERGUI INSTALLATION STEPS
+
+1 Follow the instructions as for the Long War Mod Manager, except apply JumpStart.txt with
+PatcherGUI instead of the LWMM. 
+
+2. Edit XEW\XComGame\Config\DefaultMutatorLoader.ini and add the following line to the
+   bottom of the file:
+
+        arrStrategicMutators="JumpStart.JumpStart"
+
