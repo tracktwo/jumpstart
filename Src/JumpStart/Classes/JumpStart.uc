@@ -92,13 +92,6 @@ struct TAirForce
     }
 };
 
-struct CheckpointRecord
-{
-    var string CPStr;
-};
-
-var string CPStr;
-
 var config int START_DAY;
 var config int START_MONTH;
 var config int START_YEAR;
@@ -129,6 +122,8 @@ var config array<int> satellite;
 var config array<int> alienbase;
 var config array<TAirForce> airforce;
 
+var int iSoldierIndex;
+var int iCountIndex;
 
 function Mutate(String MutateString, PlayerController Sender)
 {
@@ -253,6 +248,11 @@ function XGExaltSimulation EXALT()
 // mutator will wait in an infinite sleep loop while this happens. When
 // jumpstart is finished, it actually jumps directly to the HQ state, breaking
 // out of the loop we left ourselves in.
+// 
+// Custom soldier creation also causes a lot of looping, enough to crash the
+// game if enough soldiers are generated at once. Limit custom soldier generation
+// to 25 at a time, re-entering the 2nd phase soldier generation function if there
+// are still more to create after each chunk.
 function ExecuteJumpStart() 
 { 
     local int i;
@@ -281,6 +281,7 @@ function ExecuteJumpStart()
     }
     Base().UpdateTiles();
 
+    iSoldierIndex = 0;
     SetTimer(0.01, false, 'ExecutePhase2');
     return;
 }
@@ -290,20 +291,25 @@ function ExecutePhase2()
     // Set soldiers
  
     local int i;
+    local int startIndex;
     local int j;
-    local int k;
     local bool isMec;
     local XGTacticalGameCoreData.ESoldierClass eClass;
     local XGTacticalGameCoreNativeBase.EPerkType ePerk;
     local XGStrategySoldier kSoldier;
 
-    if (soldier.Length > 0 || blanksoldier.Length > 0)
+    if (iSoldierIndex == 0 && (soldier.Length > 0 || blanksoldier.Length > 0))
     {
         BARRACKS().m_arrSoldiers.Length = 0;
     }
 
-    for (i = 0; i < soldier.Length; ++i)
+    startIndex = iSoldierIndex;
+    for (i = iSoldierIndex; (i - startIndex) < 20; ++i)
     {
+        if (i >= soldier.Length)
+        {
+            break;
+        }
         kSoldier = Spawn(class'XGStrategySoldier');
         kSoldier.m_kSoldier = BARRACKS().m_kCharGen.CreateTSoldier(EGender(soldier[i].iGender), soldier[i].iCountry);
         kSoldier.m_kChar = TACTICAL().GetTCharacter(2);
@@ -345,7 +351,6 @@ function ExecutePhase2()
                 `Log("Error: Failed to find perk for class " $ soldier[i].iClass $ " on soldier " $ i);
                 ePerk = ePerk_None;
             }
-            `Log("Found perk " $ string(ePerk) $ " for soldier class " $ soldier[i].iClass);
 
             // Level up to squaddie to set the supraclass correctly.
             if (ePerk != ePerk_None)
@@ -465,36 +470,65 @@ function ExecutePhase2()
         {
             kSoldier.GivePerk(soldier[i].iPerk[j]);
         }
+
+        ++iSoldierIndex;
     }
 
-    // Handle random soldiers.
-    for (i = 0; i < blanksoldier.Length; ++i)
+    if (iSoldierIndex < soldier.Length)
     {
-        for (j = 0; j < blanksoldier[i].iCount; ++j)
-        {
-            `Log("Blank soldier " $ i $ " " $ j);
-            BARRACKS().AddNewSoldiers(1);
-            kSoldier = BARRACKS().m_arrSoldiers[BARRACKS().m_arrSoldiers.Length-1];
-            for (k = 0; k < blanksoldier[i].iRank; ++k)
-            {
-                kSoldier.LevelUp();
-            }
-        }
+        SetTimer(0.01, false, 'ExecutePhase2');
     }
-    `Log("There are " $ BARRACKS().m_arrSoldiers.Length $ " soldiers in the barracks");
-    // Go back over all the soldiers and reset their pawns
-    foreach BARRACKS().m_arrSoldiers(kSoldier)
+    else
     {
-        kSoldier.SetHQLocation(0, true);
+        iSoldierIndex = 0;
+        iCountIndex = 0;
+        SetTimer(0.01, false, 'ExecutePhase3');
     }
-
-    SetTimer(0.01, false, 'ExecutePhase3');
 }
 
 function ExecutePhase3()
 {
     local int i;
+    local int j;
+    local int k;
+    local int startIndex;
+    local XGStrategySoldier kSoldier;
     local XGShip_Interceptor kShip;
+
+    // Handle random soldiers.
+    while (iSoldierIndex < blanksoldier.Length)
+    {
+        startIndex = iCountIndex;
+        for (j = iCountIndex; (j - startIndex) < 10; ++j)
+        {
+            if (j >= blanksoldier[iSoldierIndex].iCount)
+            {
+                break;
+            }
+            BARRACKS().AddNewSoldiers(1);
+            kSoldier = BARRACKS().m_arrSoldiers[BARRACKS().m_arrSoldiers.Length-1];
+            for (k = 0; k < blanksoldier[iSoldierIndex].iRank; ++k)
+            {
+                kSoldier.LevelUp();
+            }
+            ++iCountIndex;
+        }
+        
+        if (iCountIndex >= blanksoldier[iSoldierIndex].iCount)
+        {
+            ++iSoldierIndex;
+            iCountIndex = 0;
+        }
+
+        SetTimer(0.01, false, 'ExecutePhase3');
+        return;
+    }
+
+    // Go back over all the soldiers and reset their pawns
+    foreach BARRACKS().m_arrSoldiers(kSoldier)
+    {
+        kSoldier.SetHQLocation(0, true);
+    }
 
     // Add storage items
     for (i = 0; i < storage.Length; ++i)
@@ -651,8 +685,6 @@ function ExecutePhase3()
         if (airforce[i].bFirestorm)
         {
             kShip.Init(ITEMTREE().GetShip(3));
-            `Log("Ship HP is " $ kShip.m_iHp);
-            `Log("Ship status is " $ kShip.m_iStatus);
             HANGAR().m_iFirestormCounter += 1;
         }
         else
@@ -706,8 +738,6 @@ function ExecutePhase3()
 
     `Log("JumpStart complete!");
 
-    CPStr = "Hey, this is a checkpoint!"; 
-    
     GAME().GoToHQ();
 }
 

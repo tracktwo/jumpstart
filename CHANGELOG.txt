@@ -2,7 +2,11 @@
 ==              JUMPSTART CHANGELOG              ==
 ===================================================
 
-v0.3B - XXXX-XX-XX
+v1.1 - 2015-09-01
+    * Fix crash on large barracks setups
+    * Add missing FRAGMENTS line to the sample DefaultJumpStart.ini file
+    
+v1.0 - 2015-08-27
     * Add new FRAGMENTS resource to make it eaier to add weapon
       fragments (the storage command still works too with 
       eItem_WeaponFragment).
@@ -10,6 +14,8 @@ v0.3B - XXXX-XX-XX
       to manually edit the DefaultMutatorLoader.ini file, but you still
       need to copy the JumpStart.u and DefaultJumpStart.ini files into the
       correct folders!
+    * Fixed a crash when JumpStart is used with the Race and Gender Aware
+      Namelist mod.
 
 v0.2B - 2015-08-04
 	* Add country, gender, and appearance fields to custom soldiers
@@ -30,4 +36,4 @@ v0.2B - 2015-08-04
           starts that do not begin on 2016-03-01 to avoid an instant slingshot mission.
        
 v0.1B - 2015-07-30
-First public release!
+    * First public release!

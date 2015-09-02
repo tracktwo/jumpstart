@@ -20,11 +20,11 @@ LONG WAR MOD MANAGER INSTALLATION STEPS
    be a sibling folder to the CookedPCConsole folder.
    
    **IMPORTANT: This is just a placeholder sample and must be edited to make a
-     useful campaign start. See step 4 below.**
+     useful campaign start. **
 
 PATCHERGUI INSTALLATION STEPS
 
-1 Follow the instructions as for the Long War Mod Manager, except apply JumpStart.txt with
+1. Follow the instructions as for the Long War Mod Manager, except apply JumpStart.txt with
 PatcherGUI instead of the LWMM. 
 
 2. Edit XEW\XComGame\Config\DefaultMutatorLoader.ini and add the following line to the
