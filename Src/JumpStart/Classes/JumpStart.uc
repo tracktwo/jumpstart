@@ -109,6 +109,7 @@ var config int FRAGMENTS;
 var config int ALIEN_RESOURCES;
 var config int ALIEN_RESEARCH;
 var config int XCOM_THREAT;
+var config int RANDOM_BASES;
 
 var config array<XGGameData.ETechType> research;
 var config array<int> foundry;
@@ -494,6 +495,8 @@ function ExecutePhase3()
     local int startIndex;
     local XGStrategySoldier kSoldier;
     local XGShip_Interceptor kShip;
+    local array<XGCountry> availableCountries;
+    local XGCountry kCountry;
 
     // Handle random soldiers.
     while (iSoldierIndex < blanksoldier.Length)
@@ -624,6 +627,28 @@ function ExecutePhase3()
     for (i = 0; i < alienbase.Length; ++i)
     {
         Country(alienbase[i]).LeaveXComProject();
+    }
+
+    // Set up random alien bases
+    foreach World().m_arrCountries (kCountry)
+    {
+        if (kCountry.IsCouncilMember() && !kCountry.LeftXCom())
+        {
+            availableCountries.AddItem(kCountry);
+        }
+    }
+
+    for (i = availableCountries.Length-1; i >= 0; --i)
+    {
+        j = Rand(i+1);
+        kCountry = availableCountries[i];
+        availableCountries[i] = availablecountries[j];
+        availableCountries[j] = kCountry;
+    }
+
+    for (i = 0; i < RANDOM_BASES; ++i)
+    {
+        availableCountries[i].LeaveXComProject();
     }
 
     // Get rid of any geoscape alerts from panicked countries
