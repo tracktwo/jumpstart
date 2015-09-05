@@ -2,6 +2,9 @@
 ==              JUMPSTART CHANGELOG              ==
 ===================================================
 
+v1.2 - XXXX-XX-XX
+    * Add RANDOM_BASES value to add random alien bases.
+    
 v1.1 - 2015-09-01
     * Fix crash on large barracks setups
     * Add missing FRAGMENTS line to the sample DefaultJumpStart.ini file
