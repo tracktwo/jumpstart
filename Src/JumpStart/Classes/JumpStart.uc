@@ -458,6 +458,21 @@ function ExecutePhase2()
         for (j = 1; j < soldier[i].iRank; ++j)
         {
             kSoldier.LevelUp();
+            if (soldier[i].iClass != -1)
+            {
+                if (soldier[i].iPerk.Find(PERKS().GetPerkInTree(ESoldierClass(soldier[i].iClass), j+1, 0)) != -1)
+                {
+                    kSoldier.LevelUpStats((j + 1) << 8);
+                }
+                if (soldier[i].iPerk.Find(PERKS().GetPerkInTree(ESoldierClass(soldier[i].iClass), j+1, 1)) != -1)
+                {
+                    kSoldier.LevelUpStats(((j + 1) << 8) | 1);
+                }
+                if (soldier[i].iPerk.Find(PERKS().GetPerkInTree(ESoldierClass(soldier[i].iClass), j+1, 2)) != -1)
+                {
+                    kSoldier.LevelUpStats(((j + 1) << 8) | 2);
+                }
+            }
         }
 
         if (isMec)
