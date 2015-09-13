@@ -29,6 +29,12 @@ struct TCustomSoldier
     var int iLanguage;
     var int iArmorDeco;
     var int iArmorTint;
+    var int iHP;
+    var int iAim;
+    var int iWill;
+    var int iMobility;
+    var int iDefense;
+    var bool bAttribBonus;
 
     structdefaultproperties
     {
@@ -50,6 +56,12 @@ struct TCustomSoldier
         iLanguage=-1
         iArmorDeco=-1
         iArmorTint=-1
+        iHP=0
+        iAim=0
+        iWill=0
+        iMobility=0
+        iDefense=0
+        bAttribBonus=true
     }
 };
 
@@ -357,6 +369,7 @@ function ExecutePhase2()
             if (ePerk != ePerk_None)
             {
                 kSoldier.LevelUp(ESoldierClass(soldier[i].iClass % 10));
+                kSoldier.LevelUpStats();
             }
             else
             {
@@ -470,6 +483,24 @@ function ExecutePhase2()
         for (j = 0; j < soldier[i].iPerk.Length; ++j)
         {
             kSoldier.GivePerk(soldier[i].iPerk[j]);
+        }
+
+        // Set attributes
+        if (soldier[i].bAttribBonus) 
+        {
+            kSoldier.m_kChar.aStats[0] += soldier[i].iHP;
+            kSoldier.m_kChar.aStats[1] += soldier[i].iAim;
+            kSoldier.m_kChar.aStats[2] += soldier[i].iDefense;
+            kSoldier.m_kChar.aStats[3] += soldier[i].iMobility;
+            kSoldier.m_kChar.aStats[7] += soldier[i].iWill;
+        }
+        else
+        {
+            kSoldier.m_kChar.aStats[0] = soldier[i].iHP;
+            kSoldier.m_kChar.aStats[1] = soldier[i].iAim;
+            kSoldier.m_kChar.aStats[2] = soldier[i].iDefense;
+            kSoldier.m_kChar.aStats[3] = soldier[i].iMobility;
+            kSoldier.m_kChar.aStats[7] = soldier[i].iWill;
         }
 
         ++iSoldierIndex;
