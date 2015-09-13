@@ -369,7 +369,6 @@ function ExecutePhase2()
             if (ePerk != ePerk_None)
             {
                 kSoldier.LevelUp(ESoldierClass(soldier[i].iClass % 10));
-                kSoldier.LevelUpStats();
             }
             else
             {
@@ -385,6 +384,7 @@ function ExecutePhase2()
                 // This is done by setting supra-class for the soldier, converting to mec if necessary
                 eClass = ESoldierClass(soldier[i].iClass % 10);
                 kSoldier.SetSoldierClass(eClass);
+                kSoldier.LevelUpStats(((soldier[i].iClass / 10) == 1) ? 256 : 258);
             }
 
             // Barbie em up
