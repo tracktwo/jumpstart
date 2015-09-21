@@ -279,6 +279,24 @@ function ExecuteJumpStart()
     for (i = 0; i < foundry.Length; ++i)
     {
         ENGINEERING().m_arrFoundryHistory[foundry[i]] = 1;
+
+        if (foundry[i] == 2) {
+            // Alien grenades
+            STOR().m_arrInfiniteItems.AddItem(84);
+            BARRACKS().UpdateGrenades(84);
+        }
+
+        if (foundry[i] == 6) {
+            // Enhanced lasers
+            if (STOR().GetShivWeapon() != 112) {
+                BARRACKS().UpdateTankWeapons(111);
+            }
+        }
+
+        if (foundry[i] == 7) {
+            // Enhanced plasma
+            BARRACKS().UpdateTankWeapons(112);
+        }
     }
 
     // Set OTS projects

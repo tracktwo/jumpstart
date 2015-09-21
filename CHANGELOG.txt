@@ -2,8 +2,15 @@
 ==              JUMPSTART CHANGELOG              ==
 ===================================================
 
-v1.2 - XXXX-XX-XX
+v1.2 - 2015-09-20
     * Add RANDOM_BASES value to add random alien bases.
+    * Fix Alien Grenade, Enhanced Lasers and Enhanced Plasma foundry projects
+      to award the correct bonuses (infinite alien grenades and upgraded SHIV
+      weapons, respectively).
+    * Added HP, Mobility, Aim, Defense, and Will stats to custom soldiers, and
+      a flag bAttribBonus indicating whether the stat is a bonus (applied on 
+      top of existing stats) or a flat value (overwrites existing stats).
+    * Award stat bonuses for class perks already chosen. 
     
 v1.1 - 2015-09-01
     * Fix crash on large barracks setups
