@@ -1,9 +1,24 @@
 class JumpStart extends XComMutator
 config(JumpStart);
 
+enum ETileType
+{
+    eTile_None,
+    eTile_Excavated,
+    eTile_Steam,
+    eTile_ExcavatedSteam,
+};
+
 struct TFacility
 {
     var XGGameData.EFacilityType iType;
+    var int X;
+    var int Y;
+};
+
+struct TTile
+{
+    var ETileType iType;
     var int X;
     var int Y;
 };
@@ -127,6 +142,7 @@ var config array<XGGameData.ETechType> research;
 var config array<int> foundry;
 var config array<XGGameData.EOTSTech> ots;
 var config array<TFacility> facility;
+var config array<TTile> tile;
 var config array<TCustomSoldier> soldier;
 var config array<TBlankSoldier> blanksoldier;
 var config array<TStorageItem> storage;
@@ -269,6 +285,7 @@ function XGExaltSimulation EXALT()
 function ExecuteJumpStart() 
 { 
     local int i;
+    local int j;
 
     for (i = 0; i < research.Length; ++i)
     {
@@ -309,6 +326,48 @@ function ExecuteJumpStart()
     for (i = 0; i < facility.Length; ++i)
     {
         Base().SetFacility(facility[i].iType, facility[i].X, facility[i].Y);
+    }
+
+    // Set tile states
+    if (tile.Length > 0) 
+    {
+        `Log("Resetting tiles: " $ Base().m_arrTiles.Length);
+        // Remove the steam vents and reset all tiles to blocked
+        for (i = 1; i < 5; ++i)
+        {
+            for (j = 0; j < 7; ++j)
+            {
+                //Don't reset the lift area
+                if (j == 3) {
+                    continue;
+                }
+
+                Base().m_arrTiles[j + i*7].iType = 0;
+            }
+        }
+
+        Base().m_arrSteamTiles.Length = 0;
+
+        for (i = 0; i < tile.Length; ++i)
+        {
+            switch(tile[i].iType)
+            {
+                case eTile_Excavated: 
+                `Log("Adding excavated tile");
+                    Base().m_arrTiles[tile[i].X + tile[i].Y*7].iType = 3;
+                    break;
+                case eTile_Steam: 
+                    `Log("Adding steam tile");
+                    Base().m_arrTiles[tile[i].X + tile[i].Y*7].iType = 1;
+                    Base().m_arrSteamTiles.AddItem(tile[i].X + tile[i].Y*7);
+                    break;
+                case eTile_ExcavatedSteam:
+                `Log("Adding excavated steam tile");
+                    Base().m_arrTiles[tile[i].X + tile[i].Y*7].iType = 4;
+                    Base().m_arrSteamTiles.AddItem(tile[i].X + tile[i].Y*7);
+                    break;
+            }
+        }
     }
     Base().UpdateTiles();
 
@@ -404,72 +463,72 @@ function ExecutePhase2()
                 kSoldier.SetSoldierClass(eClass);
                 kSoldier.LevelUpStats(((soldier[i].iClass / 10) == 1) ? 256 : 258);
             }
+        }
 
-            // Barbie em up
-            if (soldier[i].strFirstName != "")
-            {
-                kSoldier.m_kSoldier.strFirstName = soldier[i].strFirstName;
-            }
+        // Barbie em up
+        if (soldier[i].strFirstName != "")
+        {
+            kSoldier.m_kSoldier.strFirstName = soldier[i].strFirstName;
+        }
 
-            if (soldier[i].strLastName != "")
-            {
-                kSoldier.m_kSoldier.strLastName = soldier[i].strLastName;
-            }
+        if (soldier[i].strLastName != "")
+        {
+            kSoldier.m_kSoldier.strLastName = soldier[i].strLastName;
+        }
 
-            if (soldier[i].strNickName != "")
-            {
-                kSoldier.m_kSoldier.strNickName = soldier[i].strNickName;
-            }
+        if (soldier[i].strNickName != "")
+        {
+            kSoldier.m_kSoldier.strNickName = soldier[i].strNickName;
+        }
 
-            if (soldier[i].iRace != -1)
-            {
-                kSoldier.m_kSoldier.kAppearance.iRace = soldier[i].iRace;
-            }
+        if (soldier[i].iRace != -1)
+        {
+            kSoldier.m_kSoldier.kAppearance.iRace = soldier[i].iRace;
+        }
 
-            if (soldier[i].iHead != -1)
-            {
-                kSoldier.m_kSoldier.kAppearance.iHead = soldier[i].iHead;
-            }
+        if (soldier[i].iHead != -1)
+        {
+            kSoldier.m_kSoldier.kAppearance.iHead = soldier[i].iHead;
+        }
 
-            if (soldier[i].iHaircut != -1)
-            {
-                kSoldier.m_kSoldier.kAppearance.iHaircut = soldier[i].iHaircut;
-            }
+        if (soldier[i].iHaircut != -1)
+        {
+            kSoldier.m_kSoldier.kAppearance.iHaircut = soldier[i].iHaircut;
+        }
 
-            if (soldier[i].iHairColor != -1)
-            {
-                kSoldier.m_kSoldier.kAppearance.iHairColor = soldier[i].iHairColor;
-            }
+        if (soldier[i].iHairColor != -1)
+        {
+            kSoldier.m_kSoldier.kAppearance.iHairColor = soldier[i].iHairColor;
+        }
 
-            if (soldier[i].iFacialHair != -1)
-            {
-                kSoldier.m_kSoldier.kAppearance.iFacialHair = soldier[i].iFacialHair;
-            }
+        if (soldier[i].iFacialHair != -1)
+        {
+            kSoldier.m_kSoldier.kAppearance.iFacialHair = soldier[i].iFacialHair;
+        }
 
-            if (soldier[i].iSkinColor != -1)
-            {
-                kSoldier.m_kSoldier.kAppearance.iSkinColor = soldier[i].iSkinColor;
-            }
+        if (soldier[i].iSkinColor != -1)
+        {
+            kSoldier.m_kSoldier.kAppearance.iSkinColor = soldier[i].iSkinColor;
+        }
 
-            if (soldier[i].iVoice != -1)
-            {
-                kSoldier.m_kSoldier.kAppearance.iVoice = soldier[i].iVoice;
-            }
+        if (soldier[i].iVoice != -1)
+        {
+            kSoldier.m_kSoldier.kAppearance.iVoice = soldier[i].iVoice;
+        }
 
-            if (soldier[i].iLanguage != -1)
-            {
-                kSoldier.m_kSoldier.kAppearance.iLanguage = soldier[i].iLanguage;
-            }
+        if (soldier[i].iLanguage != -1)
+        {
+            kSoldier.m_kSoldier.kAppearance.iLanguage = soldier[i].iLanguage;
+        }
 
-            if (soldier[i].iArmorDeco != -1)
-            {
-                kSoldier.m_kSoldier.kAppearance.iArmorDeco = soldier[i].iArmorDeco;
-            }
+        if (soldier[i].iArmorDeco != -1)
+        {
+            kSoldier.m_kSoldier.kAppearance.iArmorDeco = soldier[i].iArmorDeco;
+        }
 
-            if (soldier[i].iArmorTint != -1)
-            {
-                kSoldier.m_kSoldier.kAppearance.iArmorTint = soldier[i].iArmorTint;
-            }
+        if (soldier[i].iArmorTint != -1)
+        {
+            kSoldier.m_kSoldier.kAppearance.iArmorTint = soldier[i].iArmorTint;
         }
 
         // Level up: we've already done it once.
