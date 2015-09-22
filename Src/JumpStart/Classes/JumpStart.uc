@@ -322,12 +322,6 @@ function ExecuteJumpStart()
         TECHTREE().ApplyOTSTech(ots[i]);
     }
 
-    // Set facilities
-    for (i = 0; i < facility.Length; ++i)
-    {
-        Base().SetFacility(facility[i].iType, facility[i].X, facility[i].Y);
-    }
-
     // Set tile states
     if (tile.Length > 0) 
     {
@@ -353,22 +347,27 @@ function ExecuteJumpStart()
             switch(tile[i].iType)
             {
                 case eTile_Excavated: 
-                `Log("Adding excavated tile");
                     Base().m_arrTiles[tile[i].X + tile[i].Y*7].iType = 3;
                     break;
                 case eTile_Steam: 
-                    `Log("Adding steam tile");
                     Base().m_arrTiles[tile[i].X + tile[i].Y*7].iType = 1;
                     Base().m_arrSteamTiles.AddItem(tile[i].X + tile[i].Y*7);
                     break;
                 case eTile_ExcavatedSteam:
-                `Log("Adding excavated steam tile");
                     Base().m_arrTiles[tile[i].X + tile[i].Y*7].iType = 4;
                     Base().m_arrSteamTiles.AddItem(tile[i].X + tile[i].Y*7);
                     break;
             }
         }
     }
+
+    // Set facilities
+    for (i = 0; i < facility.Length; ++i)
+    {
+        Base().SetFacility(facility[i].iType, facility[i].X, facility[i].Y);
+        Base().m_arrTiles[facility[i].X + facility[i].Y*7].iType = 5;
+    }
+
     Base().UpdateTiles();
 
     iSoldierIndex = 0;
