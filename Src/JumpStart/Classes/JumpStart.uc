@@ -84,6 +84,16 @@ struct TBlankSoldier
 {
     var int iRank;
     var int iCount;
+    var int iGender;
+    var int iCountry;
+
+    structdefaultproperties
+    {
+        iRank=eRank_Rookie
+        iCount=1
+        iGender=0
+        iCountry=-1
+    }
 };
 
 struct TStorageItem
@@ -630,8 +640,16 @@ function ExecutePhase3()
             {
                 break;
             }
-            BARRACKS().AddNewSoldiers(1);
-            kSoldier = BARRACKS().m_arrSoldiers[BARRACKS().m_arrSoldiers.Length-1];
+
+            kSoldier = Spawn(class'XGStrategySoldier');
+            kSoldier.m_kSoldier = BARRACKS().m_kCharGen.CreateTSoldier(EGender(blanksoldier[iSoldierIndex].iGender), 
+                    blanksoldier[iSoldierIndex].iCountry);
+            kSoldier.m_kChar = TACTICAL().GetTCharacter(2);
+            BARRACKS().RandomizeStats(kSoldier);
+            STOR().AutoEquip(kSoldier);
+            BARRACKS().AddNewSoldier(kSoldier, true);
+            kSoldier.SetHQLocation(0, true);
+
             for (k = 0; k < blanksoldier[iSoldierIndex].iRank; ++k)
             {
                 kSoldier.LevelUp();
