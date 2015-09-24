@@ -2,9 +2,10 @@
 ==              JUMPSTART CHANGELOG              ==
 ===================================================
 
-v1.4 - XXXX-XX-XX
+v1.4 - 2015-09-23
     * Add "tile" directives to set steam vents & excavation state of base tiles
     * Fix a bug causing rookies to not be assigned customization settings
+    * Add country and gender options to blanksoldier
     
 v1.3 - 2015-09-21
     * Correct incorrect .u file from 1.2

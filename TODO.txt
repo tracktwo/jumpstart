@@ -1,4 +1,2 @@
 
-- Configure steam vents & excavated spots
-- Add gender & country to bulk soldiers
 
