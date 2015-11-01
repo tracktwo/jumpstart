@@ -50,6 +50,7 @@ struct TCustomSoldier
     var int iMobility;
     var int iDefense;
     var bool bAttribBonus;
+    var int iOfficerRank;
 
     structdefaultproperties
     {
@@ -77,6 +78,7 @@ struct TCustomSoldier
         iMobility=0
         iDefense=0
         bAttribBonus=true
+        iOfficerRank=0
     }
 };
 
@@ -228,11 +230,6 @@ function XGFacility_Barracks BARRACKS()
     return XComHeadquartersGame(class'Engine'.static.GetCurrentWorldInfo().Game).GetGameCore().GetHQ().m_kBarracks;
 }
 
-function XGSetupPhaseManager SETUPMGR()
-{
-    return XComHeadquartersGame(class'Engine'.static.GetCurrentWorldInfo().Game).GetGameCore().m_kSetupPhaseManager;
-}
-
 function XGStorage STOR()
 {
     return XComHeadquartersGame(class'Engine'.static.GetCurrentWorldInfo().Game).GetGameCore().GetHQ().m_kEngineering.GetStorage();   
@@ -326,12 +323,6 @@ function ExecuteJumpStart()
         }
     }
 
-    // Set OTS projects
-    for (i = 0; i < ots.Length; ++i)
-    {
-        TECHTREE().ApplyOTSTech(ots[i]);
-    }
-
     // Set tile states
     if (tile.Length > 0) 
     {
@@ -379,6 +370,17 @@ function ExecuteJumpStart()
     }
 
     Base().UpdateTiles();
+
+    // Set OTS projects
+    for (i = 0; i < ots.Length; ++i)
+    {
+        TECHTREE().ApplyOTSTech(ots[i]);
+    }
+
+    // Reset the lab bonus
+    LABS().UpdateLabBonus();
+
+    BARRACKS().BuildMedals();
 
     iSoldierIndex = 0;
     SetTimer(0.01, false, 'ExecutePhase2');
@@ -602,6 +604,32 @@ function ExecutePhase2()
             kSoldier.m_kChar.aStats[2] = soldier[i].iDefense;
             kSoldier.m_kChar.aStats[3] = soldier[i].iMobility;
             kSoldier.m_kChar.aStats[7] = soldier[i].iWill;
+        }
+
+        // Set officer rank
+        for (j = 1; j <= soldier[i].iOfficerRank; ++j)
+        {
+            `Log("Setting officer rank " $ soldier[i].iOfficerRank);
+            if (BARRACKS().m_arrMedals[j].m_iAvailable > 0)
+            {
+                if (j == 1) 
+                {
+                    //Give them the 'officer' perk.
+                    kSoldier.GivePerk(171);
+                }
+                kSoldier.m_bPsiTested = true;
+
+                kSoldier.m_arrMedals[j] = 1;
+                BARRACKS().m_arrMedals[j].m_iAvailable--;
+                BARRACKS().m_arrMedals[j].m_iUsed++;
+            } 
+            else
+            {
+                // No more slots available at this rank. Don't add any later ranks 
+                // either.
+                `Log("JumpStart: Insufficient officer slots at rank " $ j);
+                break;
+            }
         }
 
         ++iSoldierIndex;
